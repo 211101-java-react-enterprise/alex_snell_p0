@@ -7,6 +7,7 @@ import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
 import java.util.Arrays;
 import java.util.Base64;
+import java.util.Objects;
 
 public class Password {
 
@@ -47,13 +48,15 @@ public class Password {
         return this.validatePassword(passwordText.toCharArray());
     }
 
-    public boolean validatePassword(char[] passwordText) {
+    public boolean validatePassword(char[] passwordChars) {
         try {
-            Password.verifyPasswordCriteria(passwordText);
+            if (Password.isValidPasswordText(passwordChars)) {
+                return false;
+            }
             if (this.isValid()) {
                 byte[] currentSalt = this.getSaltBytes();
                 byte[] currentHash = this.getHashBytes();
-                byte[] comparisonHash = Password.generateHash(passwordText, currentSalt);
+                byte[] comparisonHash = Password.generateHash(passwordChars, currentSalt);
                 return Arrays.equals(currentHash, comparisonHash);
             } else {
                 return false;
@@ -62,7 +65,7 @@ public class Password {
             System.err.println(e.getLocalizedMessage());
             return false;
         } finally {
-            Arrays.fill(passwordText, Character.MIN_VALUE);
+            Arrays.fill(passwordChars, Character.MIN_VALUE);
         }
     }
 
@@ -129,14 +132,19 @@ public class Password {
         return this.saltBytes;
     }
 
-    private static void verifyPasswordCriteria(char[] passwordText) throws IllegalArgumentException {
+    public static boolean isValidPassword(Password credentials) {
+        return Password.isValid(credentials.getSaltBytes(), credentials.getHashBytes());
+    }
+
+    public static boolean isValidPasswordText(String passwordText) {
+        return Password.isValidPasswordText(passwordText.toCharArray());
+    }
+
+    public static boolean isValidPasswordText(char[] passwordText) {
         if (passwordText.length < Password.PASSWORD_PLAIN_MIN_LENGTH) {
-            throw new IllegalArgumentException("Exception in verifyPasswordCriteria(): Minimum password length is "
-                    + Password.PASSWORD_PLAIN_MIN_LENGTH);
-        } else if (passwordText.length > Password.PASSWORD_PLAIN_MAX_LENGTH) {
-            throw new IllegalArgumentException("Exception in verifyPasswordCriteria(): Maximum password length is "
-                    + Password.PASSWORD_PLAIN_MAX_LENGTH);
+            return false;
         }
+        return passwordText.length <= Password.PASSWORD_PLAIN_MAX_LENGTH;
     }
 
     private static byte[] generateHash(char[] passwordText, byte[] saltBytes) {
@@ -158,5 +166,22 @@ public class Password {
         byte[] saltBytes = new byte[Password.SALT_LENGTH_BYTES];
         generator.nextBytes(saltBytes);
         return saltBytes;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || this.getClass() != obj.getClass()) {
+            return false;
+        }
+        Password credentials = (Password) obj;
+        return Objects.equals(this.getSaltBytes(), credentials.getSaltBytes()) && Objects.equals(this.getHashBytes(), credentials.getHashBytes());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.getSaltBytes(), getHashBytes());
     }
 }
