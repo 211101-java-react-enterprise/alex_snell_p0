@@ -1,4 +1,4 @@
-package main.java.com.revature.appdaos;
+package com.revature.app.daos;
 // TODO: Document this type.
 public interface EntityDAO<E> {
     E create(E newEntity);

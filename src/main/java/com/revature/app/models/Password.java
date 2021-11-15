@@ -1,58 +1,46 @@
-package main.java.com.revature.app.models;
+package com.revature.app.models;
 
-import java.util.Arrays;
-import java.security.SecureRandom;
-import java.security.spec.InvalidKeySpecException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.security.spec.InvalidKeySpecException;
+import java.util.Arrays;
+import java.util.Base64;
 
 public class Password {
 
-    private static int SALT_LENGTH_BYTES = 64;
-    private static int HASH_LENGTH_BYTES = 64;
-    private static int HASH_ITERATIONS = 1024;
-    private static String HASH_ALGORITHM = "PBKDF2WithHmacSHA512";
+    private static final int SALT_LENGTH_BYTES = 64;
+    private static final int HASH_LENGTH_BYTES = 64;
+    private static final int HASH_ITERATIONS = 1024;
+    private static final String HASH_ALGORITHM = "PBKDF2WithHmacSHA512";
 
-    private static int PASSWORD_PLAIN_MIN_LENGTH = 8;
-    private static int PASSWORD_PLAIN_MAX_LENGTH = 32;
+    private static final int PASSWORD_PLAIN_MIN_LENGTH = 8;
+    private static final int PASSWORD_PLAIN_MAX_LENGTH = 32;
 
-    private static byte[] NO_BYTES = {};
-    private static byte[] NULL_BYTES = null;
+    private static final byte[] NO_BYTES = {};
+    private static final byte[] NULL_BYTES = null;
 
     private byte[] saltBytes = Password.NULL_BYTES;
     private byte[] hashBytes = Password.NULL_BYTES;
 
     public Password(String passwordText) {
-        Password(passwordText.toCharArray();
+        this(passwordText.toCharArray());
     }
 
     public Password(char[] passwordChars) {
-        try {
-            Password.verifyPlainPasswordCriteria(passwordChars);
-            byte[] newSalt = Password.generateSalt();
-            byte[] newHash = Password.generateHash(passwordChars, newSalt);
-            if (newHash != Password.NO_BYTES) {
-                Password(newSalt, newHash);
-            } else {
-                Password(Password.NO_BYTES, Password.NO_BYTES);
-            }
-        } catch (IllegalArgumentException e) {
-            System.err.println(e.getMessage());
-            Password(Password.NO_BYTES, Password.NO_BYTES);
-        } finally {
-            Array.fill(passwordChars, Character.MIN_VALUE);
+        byte[] newSalt = Password.generateSalt();
+        byte[] newHash = Password.generateHash(passwordChars, newSalt);
+        Arrays.fill(passwordChars, Character.MIN_VALUE);
+        if (newHash != Password.NO_BYTES) {
+            this.initializeNewCredentialsOnce(newSalt, newHash);
+        } else {
+            this.initializeNewCredentialsOnce(Password.NO_BYTES, Password.NO_BYTES);
         }
     }
 
     public Password(byte[] newSalt, byte[] newHash) {
-        if (this.hashBytes == Password.NULL_BYTES && this.saltBytes == Password.NULL_BYTES) {
-            if (Password.isValid(newSalt, newHash)) {
-                this.hashBytes = newHash;
-                this.saltBytes = newSalt;
-            }
-        }
+        this.initializeNewCredentialsOnce(newSalt, newHash);
     }
 
     public boolean validatePassword(String passwordText) {
@@ -65,8 +53,8 @@ public class Password {
             if (this.isValid()) {
                 byte[] currentSalt = this.getSaltBytes();
                 byte[] currentHash = this.getHashBytes();
-                byte[] comparisonHash = Password.generateHash(currentSalt, passwordText);
-                return Array.equals(currentHash, comparisonHash);
+                byte[] comparisonHash = Password.generateHash(passwordText, currentSalt);
+                return Arrays.equals(currentHash, comparisonHash);
             } else {
                 return false;
             }
@@ -80,52 +68,52 @@ public class Password {
 
     public String getHash() {
         byte[] currentHash = this.getHashBytes();
-        switch (currentHash) {
-        case NULL_BYTES:
+        if (currentHash == Password.NULL_BYTES) {
             return "NULL_BYTES";
-            break;
-        case NO_BYTES:
-            return "NO_BYTES";
-            break;
-        default:
-            return Base64.getEncoder().encodeToString(currentHash);
         }
+        if (currentHash == Password.NO_BYTES) {
+            return "NO_BYTES";
+        }
+        return Base64.getEncoder().encodeToString(currentHash);
     }
 
     public String getSalt() {
         byte[] currentSalt = this.getSaltBytes();
-        switch (currentSalt) {
-        case NULL_BYTES:
+        if (currentSalt == Password.NULL_BYTES) {
             return "NULL_BYTES";
-            break;
-        case NO_BYTES:
+        }
+        if (currentSalt == Password.NO_BYTES) {
             return "NO_BYTES";
-            break;
-        default:
-            return Base64.getEncoder().encodeToString(currentSalt);
+        }
+        return Base64.getEncoder().encodeToString(currentSalt);
+    }
+    private void initializeNewCredentialsOnce(byte[] newSalt, byte[] newHash) {
+        if ((this.getSaltBytes() == Password.NULL_BYTES && this.getHashBytes() == Password.NULL_BYTES) &&
+                Password.isValid(newSalt, newHash)){
+            this.saltBytes = newSalt;
+            this.hashBytes = newHash;
+        } else {
+            this.saltBytes = Password.NO_BYTES;
+            this.hashBytes = Password.NO_BYTES;
         }
     }
 
-    public boolean isNotEmpty() {
-        return Password.isNotEmpty(this.getSaltBytes(), this.getHashBytes());
+    public boolean isValid() {
+        return Password.isValid(this.getSaltBytes(), this.getHashBytes());
     }
 
-    private boolean isNotEmpty(byte[]... values) {
-        return !values.contains(Password.NO_BYTES)
+    private static boolean isValid(byte[]... values) {
+        for (byte[] v : values) {
+            if (v == Password.NULL_BYTES || v == Password.NO_BYTES) {
+                return false;
+            }
+        }
+        return true;
     }
 
-    public boolean isNotNull() {
-        return Password.isNotNull(this.getSaltBytes(), this.getHashBytes());
+    public String toString() {
+        return String.format("%s:%s", this.getSalt(), this.getHash());
     }
-
-    private static boolean isNotNull(byte[]... values) {
-        return !values.contains(Password.NULL_BYTES);
-    }
-
-    /**public String toString() {
-    *    return String.format("%s:%s", this.getSalt(), this.getHash());
-    * }
-    */
 
     private byte[] getHashBytes() {
         if (this.hashBytes.length != Password.HASH_LENGTH_BYTES) {
@@ -155,7 +143,7 @@ public class Password {
         int hashLengthBits = (Password.HASH_LENGTH_BYTES * 8);
         PBEKeySpec keySpec = new PBEKeySpec(passwordText, saltBytes, Password.HASH_ITERATIONS, hashLengthBits);
         try {
-            SecretKeyFactory secret = new SecretKeyFactory.getInstance(Password.HASH_ALGORITHM);
+            SecretKeyFactory secret = SecretKeyFactory.getInstance(Password.HASH_ALGORITHM);
             return secret.generateSecret(keySpec).getEncoded();
         } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
             System.err.println("Exception encountered in generateHash()");
@@ -167,7 +155,7 @@ public class Password {
 
     private static byte[] generateSalt() {
         SecureRandom generator = new SecureRandom();
-        byte[] saltBytes = new saltBytes[Password.SALT_LENGTH_BYTES];
+        byte[] saltBytes = new byte[Password.SALT_LENGTH_BYTES];
         generator.nextBytes(saltBytes);
         return saltBytes;
     }
