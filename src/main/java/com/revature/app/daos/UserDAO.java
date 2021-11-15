@@ -1,6 +1,16 @@
-import javax.sound.sampled.ReverbType;
+package com.revature.app.daos;
+
+import com.revature.app.models.User;
 
 public class UserDAO implements EntityDAO<User> {
+
+    public boolean findUserByUsername(String username) {
+        return false;
+    }
+
+    public User findUserByUsernameAndPassword(String username, String password) {
+        return null;
+    }
 
     @Override
     public User getById(String id) {
@@ -21,4 +31,5 @@ public class UserDAO implements EntityDAO<User> {
     public User update(User updatedUser) {
         return null;
     }
+
 }
