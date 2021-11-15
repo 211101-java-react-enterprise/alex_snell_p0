@@ -13,12 +13,12 @@ public class UserDAO implements EntityDAO<User> {
     }
 
     @Override
-    public User getById(String id) {
+    public User findById(String id) {
         return null;
     }
 
     @Override
-    public User create(User newUser) {
+    public User save(User newUser) {
         return null;
     }
 

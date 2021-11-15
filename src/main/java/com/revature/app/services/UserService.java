@@ -31,7 +31,7 @@ public class UserService {
             throw new ResourcePersistenceException("That username is already taken!");
         }
 
-        User registeredUser = userDAO.create(newUser);
+        User registeredUser = userDAO.save(newUser);
 
         if (registeredUser == null) {
             throw new ResourcePersistenceException("The user could not be persisted to the datasource!");
