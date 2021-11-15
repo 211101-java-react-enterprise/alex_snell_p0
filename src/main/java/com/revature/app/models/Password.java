@@ -8,36 +8,31 @@ import java.security.NoSuchAlgorithmException;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 
-// TODO Extract static logic into new PasswordService
-// TODO Encode hash information into output and input string
-// TODO Massively simplify logic (Optional type?)
+public class Password {
 
-public final class Password {
+    private static int SALT_LENGTH_BYTES = 64;
+    private static int HASH_LENGTH_BYTES = 64;
+    private static int HASH_ITERATIONS = 1024;
+    private static String HASH_ALGORITHM = "PBKDF2WithHmacSHA512";
 
-    private static final int SALT_LENGTH_BYTES = 64;
-    private static final int HASH_LENGTH_BYTES = 64;
-    private static final int HASH_ITERATIONS = 1024;
-    private static final String HASH_ALGORITHM = "PBKDF2WithHmacSHA512";
+    private static int PASSWORD_PLAIN_MIN_LENGTH = 8;
+    private static int PASSWORD_PLAIN_MAX_LENGTH = 32;
 
-    private static final int PASSWORD_PLAIN_MIN_LENGTH = 8;
-    private static final int PASSWORD_PLAIN_MAX_LENGTH = 32;
-
-    private static final byte[] NO_BYTES = {};
-    private static final byte[] NULL_BYTES = null;
+    private static byte[] NO_BYTES = {};
+    private static byte[] NULL_BYTES = null;
 
     private byte[] saltBytes = Password.NULL_BYTES;
     private byte[] hashBytes = Password.NULL_BYTES;
 
     public Password(String passwordText) {
-        if ()
-        Password(passwordText.toCharArray());
+        Password(passwordText.toCharArray();
     }
 
-    public Password(char[] passwordText) {
+    public Password(char[] passwordChars) {
         try {
-            Password.verifyPlainPasswordCriteria(passwordText);
+            Password.verifyPlainPasswordCriteria(passwordChars);
             byte[] newSalt = Password.generateSalt();
-            byte[] newHash = Password.generateHash(passwordText, newSalt);
+            byte[] newHash = Password.generateHash(passwordChars, newSalt);
             if (newHash != Password.NO_BYTES) {
                 Password(newSalt, newHash);
             } else {
@@ -47,7 +42,7 @@ public final class Password {
             System.err.println(e.getMessage());
             Password(Password.NO_BYTES, Password.NO_BYTES);
         } finally {
-            Array.fill(passwordText, Character.MIN_VALUE);
+            Array.fill(passwordChars, Character.MIN_VALUE);
         }
     }
 
@@ -60,11 +55,11 @@ public final class Password {
         }
     }
 
-    public final boolean validatePassword(String passwordText) {
+    public boolean validatePassword(String passwordText) {
         return this.validatePassword(passwordText.toCharArray());
     }
 
-    public final boolean validatePassword(char[] passwordText) {
+    public boolean validatePassword(char[] passwordText) {
         try {
             Password.verifyPasswordCriteria(passwordText);
             if (this.isValid()) {
@@ -83,7 +78,7 @@ public final class Password {
         }
     }
 
-    public final String getHash() {
+    public String getHash() {
         byte[] currentHash = this.getHashBytes();
         switch (currentHash) {
         case NULL_BYTES:
@@ -97,7 +92,7 @@ public final class Password {
         }
     }
 
-    public final String getSalt() {
+    public String getSalt() {
         byte[] currentSalt = this.getSaltBytes();
         switch (currentSalt) {
         case NULL_BYTES:
@@ -111,40 +106,42 @@ public final class Password {
         }
     }
 
-    public final boolean isValid() {
-        return Password.isValid(this.getSaltBytes(), this.getHashBytes());
+    public boolean isNotEmpty() {
+        return Password.isNotEmpty(this.getSaltBytes(), this.getHashBytes());
     }
 
-    public static final boolean isValid(byte[]... values) {
-        for (byte[] v : values) {
-            if (v == Password.NO_BYTES || v == Password.NULL_BYTES) {
-                return false;
-            }
-        }
-        return true;
-
-        return !Arrays.asList(this.hashBytes, this.saltBytes).contains(Password.NO_BYTES, Password.NULL_BYTES);
+    private boolean isNotEmpty(byte[]... values) {
+        return !values.contains(Password.NO_BYTES)
     }
 
-    public final String toString() {
-        return (this.getSalt() + ":" + this.getHash());
+    public boolean isNotNull() {
+        return Password.isNotNull(this.getSaltBytes(), this.getHashBytes());
     }
 
-    private final byte[] getHashBytes() {
+    private static boolean isNotNull(byte[]... values) {
+        return !values.contains(Password.NULL_BYTES);
+    }
+
+    /**public String toString() {
+    *    return String.format("%s:%s", this.getSalt(), this.getHash());
+    * }
+    */
+
+    private byte[] getHashBytes() {
         if (this.hashBytes.length != Password.HASH_LENGTH_BYTES) {
-            return Password.NO_BYTES;
+            return new byte[0];
         }
         return this.hashBytes;
     }
 
-    private final byte[] getSaltBytes() {
-        if (this.saltBytes.length != Password.Salt_LENGTH_BYTES) {
-            return Password.NO_BYTES;
+    private byte[] getSaltBytes() {
+        if (this.saltBytes.length != Password.SALT_LENGTH_BYTES) {
+            return new byte[0];
         }
         return this.saltBytes;
     }
 
-    private static final void verifyPasswordCriteria(char[] passwordText) throws IllegalArgumentException {
+    private static void verifyPasswordCriteria(char[] passwordText) throws IllegalArgumentException {
         if (passwordText.length < Password.PASSWORD_PLAIN_MIN_LENGTH) {
             throw new IllegalArgumentException("Exception in verifyPasswordCriteria(): Minimum password length is "
                     + Password.PASSWORD_PLAIN_MIN_LENGTH);
@@ -154,7 +151,7 @@ public final class Password {
         }
     }
 
-    private static final byte[] generateHash(char[] passwordText, byte[] saltBytes) {
+    private static byte[] generateHash(char[] passwordText, byte[] saltBytes) {
         int hashLengthBits = (Password.HASH_LENGTH_BYTES * 8);
         PBEKeySpec keySpec = new PBEKeySpec(passwordText, saltBytes, Password.HASH_ITERATIONS, hashLengthBits);
         try {
@@ -168,9 +165,9 @@ public final class Password {
         }
     }
 
-    private static final byte[] generateSalt() {
+    private static byte[] generateSalt() {
         SecureRandom generator = new SecureRandom();
-        byte[] saltBytes = new saltBytes[Password.SALT_LENGTH];
+        byte[] saltBytes = new saltBytes[Password.SALT_LENGTH_BYTES];
         generator.nextBytes(saltBytes);
         return saltBytes;
     }
