@@ -1,5 +1,5 @@
 <<<<<<< HEAD
-package com.revature.app.app.daos;
+package com.revature.app.daos;
 =======
 package com.revature.app.daos;
 >>>>>>> dev
