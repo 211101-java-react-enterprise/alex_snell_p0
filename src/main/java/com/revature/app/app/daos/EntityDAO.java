@@ -1,12 +1,13 @@
 package main.java.com.revature.app.app.daos;
 
+// TODO: Document this type.
 public interface EntityDAO<E> {
-    E createEntity(E newEntity);
+    E create(E newEntity);
 
+    // QUESTION: Use enum as parameter for generic getEntity()?
+    // TODO: Clarify parameter as UUID if implemented
     E getById(String id);
-
     E update(E updatedEntity);
 
-    E deleteById(String id);
-
+    void deleteById(String id);
 }
