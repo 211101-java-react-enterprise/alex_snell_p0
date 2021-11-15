@@ -14,7 +14,7 @@ public class UserDAO implements EntityDAO<User> {
 
     @Override
     public void deleteById(String id) {
-
+      // TODO complete method stub
     }
 
     @Override
