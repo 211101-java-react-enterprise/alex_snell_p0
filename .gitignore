@@ -1,6 +1,13 @@
 # IDE files
+.vscode/**
+.idea/**
+.devcontainer/**
+workspace.code-workspace
+
+# Sensitive files
 *.properties
-*.idea
+*.environment
+*.env
 
 # Compiled class file
 *.class
@@ -25,3 +32,9 @@
 
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
+.vscode/settings.json
+.classpath
+.project
+target/classes/requirements.md
+.vscode/settings.json
+.vscode/settings.json
