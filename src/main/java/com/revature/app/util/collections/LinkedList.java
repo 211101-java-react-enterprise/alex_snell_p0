@@ -12,6 +12,7 @@ public class LinkedList<T> implements List<T> {
     private Node<T> head; // implicitly null
     private Node<T> tail = null; // you can explicitly declare them as null, but it's not required.
 
+
     /**
      * Appends the specified element to the end of this list.
      *

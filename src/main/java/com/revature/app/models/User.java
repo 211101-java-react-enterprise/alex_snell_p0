@@ -1,69 +1,111 @@
 package com.revature.app.models;
 
-import com.revature.app.models.Password;
-import com.revature.app.models.Profile;
-
 import java.util.Objects;
 import java.util.regex.Pattern;
 
 public class User {
 
-    static private final Pattern validUsername = Pattern.compile("^[A-z][A-z0-9_-]+$");
+    private static final Pattern validEmail = Pattern.compile("^[A-z][A-z0-9.@-_]+$");
 
     private String id;
-    private String username;
-    private final Profile profile;
-    private final Password credentials;
+    private String role;
+    private String email;
+    private String password;
+    private String firstName;
+    private String lastName;
 
-    public User(String username, Profile profile, Password credentials) {
-        this.username = username;
-        this.profile = profile;
-        this.credentials = credentials;
+    public User() {};
+
+    public User(String email, String password, String firstName, String lastName) {
+        this.email = email;
+        this.password = password;
+        this.firstName = firstName;
+        this.lastName = lastName;
     }
 
-    public User(String id, String username, Profile profile, Password credentials) {
-        this(username, profile, credentials);
+    public User(String id, String role, String email, String password, String firstName, String lastName) {
         this.id = id;
+        this.role = role;
+        this.email = email;
+        this.password = password;
+        this.firstName = firstName;
+        this.lastName = lastName;
     }
 
     public String getId() {
-        return id;
+        return this.id;
     }
 
     public void setId(String id) {
         this.id = id;
     }
 
-    public String getUsername() {
-        return username;
+    public String getRole() {
+        return this.role;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setRole(String role) {
+        this.role = role;
     }
 
-    public static boolean isValidUsername(String username) {
-        if (username == null) {
+    public String getEmail() {
+        return this.email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getFirstName() {
+        return this.firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return this.lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+
+
+    public static boolean isValidEmail(String email) {
+        if (email == null) {
             return false;
         }
-        return User.validUsername.matcher(username).matches();
+        return true;
     }
 
     public static boolean isValidUser(User user) {
-        return User.isValidUsername(user.getUsername()) && Profile.isValidProfile(user.profile) && Password.isValidPassword(user.credentials);
+        return User.isValidEmail(user.getEmail());
     }
+
 
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
         if (obj == null || getClass() != obj.getClass()) return false;
         User user = (User) obj;
-        return Objects.equals(this.id, user.id) && Objects.equals(this.username, user.username) && Objects.equals(this.credentials, user.credentials) && Objects.equals(this.profile, user.profile);
+        return (Objects.equals(this.id, user.id) && Objects.equals(this.email, user.email) && this.password.equals(user.password));
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.id, this.username, this.credentials, this.profile);
+        return Objects.hash(this.id, this.email, this.password, this.firstName, this.lastName);
     }
+
 
 }

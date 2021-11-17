@@ -1,13 +1,12 @@
 package com.revature.app.util.strings;
 
-import com.revature.app.util.types.Labeled;
 import java.util.HashMap;
 import java.util.Map;
 
 public class Color {
 
 
-    public enum ANSI implements Labeled {
+    public enum ANSI {
 
         RESET("\u001b[0m"),
         RED("\u001b[31m"),
@@ -36,8 +35,7 @@ public class Color {
             return ANSI.COLOR_CODE.get(label);
         }
 
-        @Override
-        public String label() {
+        public String getLabel() {
             return this.label;
         }
 
@@ -49,15 +47,15 @@ public class Color {
 
     public static String println(ANSI color, String... infixStrings) {
         StringBuilder strBuilder = new StringBuilder();
-        strBuilder.append(color.label());
+        strBuilder.append(color.getLabel());
         for (String infixString : infixStrings) {
             strBuilder.append(infixString);
         }
-        strBuilder.append(ANSI.RESET.label());
+        strBuilder.append(ANSI.RESET.getLabel());
         return strBuilder.toString();
     }
 
     private static String getCode(ANSI color) {
-        return color.label();
+        return color.getLabel();
     }
 }

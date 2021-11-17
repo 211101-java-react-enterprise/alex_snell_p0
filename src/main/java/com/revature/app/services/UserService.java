@@ -5,8 +5,7 @@ import com.revature.app.exceptions.AuthenticationException;
 import com.revature.app.exceptions.InvalidRequestException;
 import com.revature.app.exceptions.ResourcePersistenceException;
 import com.revature.app.models.User;
-import com.revature.app.models.Profile;
-import com.revature.app.models.Password;
+
 
 public class UserService {
 
@@ -18,17 +17,39 @@ public class UserService {
         this.sessionUser = null;
     }
 
-    public User registerNewUser(UserStub userStub) throws InvalidRequestException {
-        Password newCredentials = new Password(userStub.password);
-        Profile newProfile = new Profile(userStub.email, userStub.firstName, userStub.lastName);
-        User newUser = new User(userStub.username, newProfile, newCredentials);
+    public User getSessionUser() {
+        return this.sessionUser;
+    }
 
-        if (!User.isValidUser(newUser)) {
-            throw new InvalidRequestException("Invalid user data provided");
+    public void authenticateUser(String email, String password) {
+
+        if (email == null || email.trim().equals("") || password == null || password.trim().equals("")) {
+            throw new InvalidRequestException("Invalid credential values provided!");
         }
 
-        if (!userDAO.findUserByUsername(newUser.getUsername())) {
-            throw new ResourcePersistenceException("That username is already taken!");
+        User authenticatedUser = userDAO.findByEmailAndPassword(email, password);
+
+        if (authenticatedUser == null) {
+            throw new AuthenticationException();
+        }
+
+        sessionUser = authenticatedUser;
+
+    }
+
+
+    public boolean registerNewUser (User newUser){
+
+        if (!isUserValid(newUser)) {
+            throw new InvalidRequestException("Invalid user data provided!");
+        }
+
+        boolean emailAvailable = userDAO.findByEmail(newUser.getEmail()) == null;
+
+        if (!emailAvailable) {
+            String msg = "The values provided for the following fields are already taken by other users:";
+            if (!emailAvailable) msg = msg + "\n\t- email";
+            throw new ResourcePersistenceException(msg);
         }
 
         User registeredUser = userDAO.save(newUser);
@@ -37,20 +58,8 @@ public class UserService {
             throw new ResourcePersistenceException("The user could not be persisted to the datasource!");
         }
 
-        return registeredUser;
-    }
+        return true;
 
-    public void authenticateUser(UserStub stub) throws AuthenticationException {
-        if (!User.isValidUsername(stub.username) || !Password.isValidPasswordText(stub.password)) {
-            throw new InvalidRequestException("Invalid credentials provided");
-        }
-
-        User authenticatedUser = userDAO.findUserByUsernameAndPassword(stub.username, stub.password);
-        if (authenticatedUser == null) {
-            throw new AuthenticationException();
-        }
-
-        sessionUser = authenticatedUser;
     }
 
     public void logout() {
@@ -61,25 +70,12 @@ public class UserService {
         return sessionUser != null;
     }
 
-    public static class UserStub {
-        public String username;
-        public String password;
-        public String email;
-        public String firstName;
-        public String lastName;
-
-        public UserStub(String username, String password) {
-            this.username = username.trim();
-            this.password = password.trim();
-        }
-
-        public UserStub(String username, String password, String email, String firstName, String lastName) {
-            this.username = username.trim();
-            this.password = password.trim();
-            this.email = email.trim();
-            this.firstName = firstName.trim();
-            this.lastName = lastName.trim();
-        }
+    public boolean isUserValid(User user) {
+        if (user == null) return false;
+        if (user.getFirstName() == null || user.getFirstName().trim().equals("")) return false;
+        if (user.getLastName() == null || user.getLastName().trim().equals("")) return false;
+        if (user.getEmail() == null || user.getEmail().trim().equals("")) return false;
+        return user.getPassword() != null && !user.getPassword().trim().equals("");
     }
 
 }

@@ -182,6 +182,6 @@ public class Password {
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.getSaltBytes(), getHashBytes());
+        return Objects.hash(Arrays.hashCode(this.getSaltBytes()), Arrays.hashCode(getHashBytes()));
     }
 }

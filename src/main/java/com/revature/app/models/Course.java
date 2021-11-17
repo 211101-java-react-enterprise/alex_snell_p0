@@ -5,27 +5,37 @@ import java.util.Objects;
 public class Course {
 
     private String id;
-    private String subjectPrefix;
-    private String subjectTile;
     private String level;
+    private String program;
     private String name;
     private String description;
-    private int maxSeats;
-    private int currentSeats;
+    private User creator;
 
-    public Course(String subjectPrefix, String subjectTile, String level, String name, String description, int maxSeats, int currentSeats) {
-        this.subjectPrefix = subjectPrefix;
-        this.subjectTile = subjectTile;
+    public Course() {};
+
+    public Course(User creator, String program,String level, String name, String description) {
+        this.program = program;
         this.level = level;
         this.name = name;
         this.description = description;
-        this.maxSeats = maxSeats;
-        this.currentSeats = currentSeats;
+        this.creator = creator;
     }
 
-    public Course(String id, String subjectPrefix, String subjectTile, String level, String name, String description, int maxSeats, int currentSeats) {
-        this(subjectPrefix, subjectTile, level, name, description, maxSeats, currentSeats);
+    public Course(String id, User creator, String creatorId, String program, String level, String name, String description) {
         this.id = id;
+        this.program = program;
+        this.level = level;
+        this.name = name;
+        this.description = description;
+        this.creator = creator;
+    }
+
+    public User getCreator() {
+        return creator;
+    }
+
+    public void setCreator(User creator) {
+        this.creator = creator;
     }
 
     public String getId() {
@@ -36,29 +46,23 @@ public class Course {
         this.id = id;
     }
 
-    public String getSubjectPrefix() {
-        return subjectPrefix;
-    }
-
-    public void setSubjectPrefix(String subjectPrefix) {
-        this.subjectPrefix = subjectPrefix;
-    }
-
-    public String getSubjectTile() {
-        return subjectTile;
-    }
-
-    public void setSubjectTile(String subjectTile) {
-        this.subjectTile = subjectTile;
-    }
 
     public String getLevel() {
-        return level;
+        return this.level;
     }
 
     public void setLevel(String level) {
         this.level = level;
     }
+
+    public String getProgram() {
+        return this.program;
+    }
+
+    public void setProgram(String program) {
+        this.program = program;
+    }
+
 
     public String getName() {
         return name;
@@ -76,45 +80,26 @@ public class Course {
         this.description = description;
     }
 
-    public int getMaxSeats() {
-        return maxSeats;
-    }
-
-    public void setMaxSeats(int maxSeats) {
-        this.maxSeats = maxSeats;
-    }
-
-    public int getCurrentSeats() {
-        return currentSeats;
-    }
-
-    public void setCurrentSeats(int currentSeats) {
-        this.currentSeats = currentSeats;
-    }
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Course course = (Course) o;
-        return maxSeats == course.maxSeats && currentSeats == course.currentSeats && id.equals(course.id) && subjectPrefix.equals(course.subjectPrefix) && subjectTile.equals(course.subjectTile) && level.equals(course.level) && name.equals(course.name) && description.equals(course.description);
+        return this.name.equals(course.name) && this.description.equals(course.description);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, subjectPrefix, subjectTile, level, name, description, maxSeats, currentSeats);
+        return Objects.hash(id, level, name, description);
     }
 
     @Override
     public String toString() {
         return "Course{" +
                 "id='" + id + '\'' +
-                ", subjectPrefix='" + subjectPrefix + '\'' +
-                ", subjectTile='" + subjectTile + '\'' +
                 ", level='" + level + '\'' +
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
-                ", maxSeats=" + maxSeats +
-                ", currentSeats=" + currentSeats +
                 '}';
     }
 
