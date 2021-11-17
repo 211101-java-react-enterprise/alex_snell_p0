@@ -7,7 +7,6 @@ public class Profile {
 
     private static final Pattern validName = Pattern.compile("^[A-z][A-z],'-.]+$");
 
-
     private String id;
     private String firstName;
     private String lastName ;
@@ -51,9 +50,6 @@ public class Profile {
         }
         return false;
     }
-
-
-
 
     public static boolean isValidName(String name) {
         if (name == null) {

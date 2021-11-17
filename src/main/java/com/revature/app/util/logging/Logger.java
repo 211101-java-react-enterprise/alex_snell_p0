@@ -15,7 +15,7 @@ public class Logger {
 
     private Logger(LogPrinter logPrinter) {
         if  (logPrinter == null) {
-            this.logPrinter = LogPrinter.CONSOLE;
+            this.logPrinter = LogPrinter.FILE;
         } else {
             this.logPrinter = logPrinter;
         }
@@ -27,9 +27,9 @@ public class Logger {
 
     public void log(LogLevel logLevel, String msg) {
         String formattedMsg = String.format("[%s]: %s", logLevel.name(), msg);
-        if (this.logPrinter == LogPrinter.CONSOLE) {
+        if (this.logPrinter.equals(LogPrinter.CONSOLE)) {
             System.out.println(formattedMsg);
-        } else if (this.logPrinter == LogPrinter.FILE) {
+        } else {
             try (Writer logWriter = new FileWriter(Logger.LOG_FILE, true)) {
                 logWriter.write(formattedMsg + "\n");
             } catch (IOException e) {

@@ -14,7 +14,7 @@ public class WelcomeScreen extends Screen {
     @Override
     public void render() {
 
-        System.out.print("\nWelcome to your Course Selection!\n" +
+        System.out.print("\nWelcome to your CLI Course Registration!\n" +
                 "1) Login\n" +
                 "2) Register\n" +
                 "3) Exit\n" +

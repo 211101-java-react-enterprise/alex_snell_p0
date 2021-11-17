@@ -21,7 +21,8 @@ public class DashboardScreen extends Screen {
         }
 
         while (this.state.userService.isSessionActive()) {
-            System.out.printf("\n%s's Dashboard\n", sessionUser.getFirstName());
+            System.out.printf("\n%s's Course Management Dashboard", sessionUser.getFirstName());
+            System.out.printf("\nCourse View: %s\n", sessionUser.getRole());
 
             String menu;
             switch(sessionUser.getRole()) {

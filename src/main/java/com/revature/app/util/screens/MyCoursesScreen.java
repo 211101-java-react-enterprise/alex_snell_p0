@@ -41,7 +41,7 @@ public class MyCoursesScreen extends Screen {
                 System.out.println("Your courses: \n");
                 for (int i = 0; i < myCourses.size(); i++) {
                     Course course = myCourses.get(i);
-                    System.out.println("Course: " + course.getProgram() + " " + course.getLevel() + ": " + course.getName());
+                    System.out.println("Course: " + course.getName());
                     System.out.println("Description: " + course.getDescription() + "\n");
                 }
                 break;
