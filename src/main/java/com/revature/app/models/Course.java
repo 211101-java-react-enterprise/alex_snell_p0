@@ -21,7 +21,7 @@ public class Course {
         this.creator = creator;
     }
 
-    public Course(String id, User creator, String creatorId, String program, String level, String name, String description) {
+    public Course(String id, User creator, String program, String level, String name, String description) {
         this.id = id;
         this.program = program;
         this.level = level;
@@ -31,7 +31,7 @@ public class Course {
     }
 
     public User getCreator() {
-        return creator;
+        return this.creator;
     }
 
     public void setCreator(User creator) {
@@ -39,7 +39,7 @@ public class Course {
     }
 
     public String getId() {
-        return id;
+        return this.id;
     }
 
     public void setId(String id) {
@@ -65,7 +65,7 @@ public class Course {
 
 
     public String getName() {
-        return name;
+        return this.name;
     }
 
     public void setName(String name) {
@@ -73,7 +73,7 @@ public class Course {
     }
 
     public String getDescription() {
-        return description;
+        return this.description;
     }
 
     public void setDescription(String description) {

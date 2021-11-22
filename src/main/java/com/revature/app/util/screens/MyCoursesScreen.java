@@ -13,10 +13,11 @@ public class MyCoursesScreen extends Screen {
 
     @Override
     public void render() {
-        List<Course> myCourses = this.state.courseService.findMyCourses();
 
+        List<Course> myCourses;
         switch (this.state.getUserService().getSessionUser().getRole()) {
             case "student":
+                myCourses = this.state.courseService.findMyCourses();
                 if (myCourses.isEmpty()) {
                     System.out.println("You have not registered to any courses!");
                     System.out.println("Returning to dashboard");
@@ -26,12 +27,12 @@ public class MyCoursesScreen extends Screen {
                 System.out.println("Your courses: \n");
                 for (int i = 0; i < myCourses.size(); i++) {
                     Course course = myCourses.get(i);
-                    System.out.println("Course: " + course.getName());
-                    System.out.println("Teacher: " + course.getCreator().getFirstName() + " " + course.getCreator().getLastName() + "\n");
+                    System.out.println("Course: " + course.getLevel() + " " + course.getProgram() + " " + course.getName());
                     System.out.println("Description: " + course.getDescription() + "\n");
                 }
                 break;
             case "teacher":
+                myCourses = this.state.courseService.findMyCourses();
                 if (myCourses.isEmpty()) {
                     System.out.println("You not administering any courses!");
                     System.out.println("Returning to dashboard");
@@ -41,7 +42,7 @@ public class MyCoursesScreen extends Screen {
                 System.out.println("Your courses: \n");
                 for (int i = 0; i < myCourses.size(); i++) {
                     Course course = myCourses.get(i);
-                    System.out.println("Course: " + course.getName());
+                    System.out.println("Course: " + course.getLevel() + " " + course.getProgram() + " " + course.getName());
                     System.out.println("Description: " + course.getDescription() + "\n");
                 }
                 break;

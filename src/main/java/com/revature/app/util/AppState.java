@@ -63,7 +63,7 @@ public class AppState {
     private AppState() {
 
         this.stateAction = StateAction.LOOP;
-        this.logger = Logger.getLogger(LogPrinter.CONSOLE);
+        this.logger = Logger.getLogger(LogPrinter.FILE);
         this.userDAO = new UserDAO();
         this.courseDAO = new CourseDAO();
         this.userService = new UserService(this.userDAO);
@@ -79,6 +79,10 @@ public class AppState {
         router.addScreen(new DashboardScreen(StateAction.EXIT, this));
         router.addScreen(new MyCoursesScreen(StateAction.EXIT, this));
         router.addScreen(new CreateCourseScreen(StateAction.EXIT, this));
+        router.addScreen(new EditCourseScreen(StateAction.EXIT, this));
+        router.addScreen(new DeleteCourseScreen(StateAction.EXIT, this));
+        router.addScreen(new DropCourseScreen(StateAction.EXIT, this));
+        router.addScreen(new RegisterCourseScreen(StateAction.EXIT, this));
     }
 
     private static int guard = 0;

@@ -15,8 +15,8 @@ public class DashboardScreen extends Screen {
 
         User sessionUser = this.state.userService.getSessionUser();
         if (sessionUser == null) {
-            System.out.println("You are not currently logged in! Navigating to Login Screen");
-            this.state.router.navigate("/login");
+            System.out.println("You are not currently logged in! Navigating to Welcome Screen");
+            this.state.router.navigate("/welcome");
             return;
         }
 
@@ -29,13 +29,16 @@ public class DashboardScreen extends Screen {
                 case "student":
                     menu = "1) View and drop currently registered courses\n" +
                             "2) View and register for new courses\n" +
-                            "3) Logout\n" +
+                            "3) View all registered courses\n" +
+                            "4) Logout\n" +
                             "> ";
                     break;
                 case "teacher":
                     menu = "1) View and edit currently administered courses\n" +
                             "2) Create new course\n" +
-                            "3) Logout\n" +
+                            "3) View all administered courses\n" +
+                            "4) View and delete currently administered courses\n" +
+                            "5) Logout\n" +
                             "> ";
                     break;
                 default:
@@ -53,12 +56,17 @@ public class DashboardScreen extends Screen {
                     switch (userSelection) {
                         case "1":
                             System.out.println("View/drop registered courses");
-                            this.state.router.navigate("/mycourses");
+                            this.state.router.navigate("/dropcourse");
                             break;
                         case "2":
                             System.out.println("View/join new courses");
+                            this.state.router.navigate("/registercourse");
                             break;
                         case "3":
+                            System.out.println("View registered courses");
+                            this.state.router.navigate("/mycourses");
+                            break;
+                        case "4":
                             this.state.userService.logout();
                             break;
                         default:
@@ -69,13 +77,21 @@ public class DashboardScreen extends Screen {
                     switch (userSelection) {
                         case "1":
                             System.out.println("View/edit administered courses");
-                            this.state.router.navigate("/mycourses");
+                            this.state.router.navigate("/editcourse");
                             break;
                         case "2":
                             System.out.println("Create new course");
                             this.state.router.navigate("/createcourse");
                             break;
                         case "3":
+                            System.out.println("View all administered courses");
+                            this.state.router.navigate("/mycourses");
+                            break;
+                        case "4":
+                            System.out.println("View/delete currently administered courses");
+                            this.state.router.navigate("/deletecourse");
+                            break;
+                        case "5":
                             this.state.userService.logout();
                             break;
                         default:

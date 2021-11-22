@@ -11,8 +11,48 @@ import java.util.UUID;
 
 public class CourseDAO implements EntityDAO<Course> {
 
+    public List<Course> findAllCourses() {
+        List<Course> courses = new LinkedList<>();
+        try (Connection conn = ConnectionFactory.getInstance().getConnection()) {
+            String sql = "SELECT * FROM courses";
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Course course = new Course();
+                User courseAdmin = new User();
+                course.setId(rs.getString("course_id"));
+                course.setName(rs.getString("name"));
+                course.setDescription(rs.getString("description"));
+                course.setProgram(rs.getString("program"));
+                course.setLevel(rs.getString("level"));
+                courseAdmin.setId(rs.getString("creator_id"));
+                course.setCreator(courseAdmin);
+                courses.add(course);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return courses;
+    }
 
-    public List<Course> findRegistrationByUserId(String userId) {
+    public boolean findRegistrationById(String userId, String courseId) {
+        try (Connection conn = ConnectionFactory.getInstance().getConnection()) {
+            String sql = "select * " +
+                    "from registrations " +
+                    "where user_id = ? " +
+                    "and course_id = ?";
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, userId);
+            pstmt.setString(2, courseId);
+            ResultSet rs = pstmt.executeQuery();
+            return rs.next();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public List<Course> findRegistrationsByUserId(String userId) {
 
         List<Course> courses = new LinkedList<>();
 
@@ -20,10 +60,9 @@ public class CourseDAO implements EntityDAO<Course> {
 
             String sql = "select c.* " +
                     "from courses c " +
-                    "join registrations r " +
-                    "on r.course_id = c.course_id " +
-                    "and r.user_id = user_id " +
-                    "where user_id = ?";
+                    "join registrations r on c.course_id = r.course_id " +
+                    "join users u on u.user_id = r.user_id " +
+                    "and u.user_id = ?";
 
             PreparedStatement pstmt = conn.prepareStatement(sql);
             pstmt.setString(1, userId);
@@ -35,10 +74,46 @@ public class CourseDAO implements EntityDAO<Course> {
                 course.setId(rs.getString("course_id"));
                 course.setName(rs.getString("name"));
                 course.setDescription(rs.getString("description"));
-                courseAdmin.setId(rs.getString("user_id"));
-                courseAdmin.setFirstName(rs.getString("first_name"));
-                courseAdmin.setLastName(rs.getString("last_name"));
-                courseAdmin.setEmail(rs.getString("email"));
+                course.setProgram(rs.getString("program"));
+                course.setLevel(rs.getString("level"));
+                courseAdmin.setId(rs.getString("creator_id"));
+                course.setCreator(courseAdmin);
+                courses.add(course);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return courses;
+
+    }
+
+    public List<Course> findRegistrationByNotUserId(String userId) {
+
+        List<Course> courses = new LinkedList<>();
+
+        try (Connection conn = ConnectionFactory.getInstance().getConnection()) {
+
+            String sql = "select c.* " +
+                    "from courses c " +
+                    "outer join registrations r on c.course_id = r.course_id " +
+                    "join users u on u.user_id = r.user_id " +
+                    "and u.user_id = ?";
+
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, userId);
+            ResultSet rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                Course course = new Course();
+                User courseAdmin = new User();
+                course.setId(rs.getString("course_id"));
+                course.setName(rs.getString("name"));
+                course.setDescription(rs.getString("description"));
+                course.setProgram(rs.getString("program"));
+                course.setLevel(rs.getString("level"));
+                courseAdmin.setId(rs.getString("creator_id"));
                 course.setCreator(courseAdmin);
                 courses.add(course);
             }
@@ -73,6 +148,8 @@ public class CourseDAO implements EntityDAO<Course> {
                 course.setId(rs.getString("course_id"));
                 course.setName(rs.getString("name"));
                 course.setDescription(rs.getString("description"));
+                course.setProgram(rs.getString("program"));
+                course.setLevel(rs.getString("level"));
                 courseAdmin.setId(rs.getString("user_id"));
                 courseAdmin.setFirstName(rs.getString("first_name"));
                 courseAdmin.setLastName(rs.getString("last_name"));
@@ -119,37 +196,6 @@ public class CourseDAO implements EntityDAO<Course> {
 
     }
 
-    public List<Course> findAll() {
-
-        List<Course> courses = new LinkedList<>();
-
-        try (Connection conn = ConnectionFactory.getInstance().getConnection()) {
-
-            String sql = "select * from flashcards f join app_users u on f.creator_id = u.id";
-            Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery(sql);
-
-            while (rs.next()) {
-                Course course = new Course();
-                User courseAdmin = new User();
-                course.setId(rs.getString("course_id"));
-                course.setName(rs.getString("name"));
-                course.setDescription(rs.getString("description"));
-                courseAdmin.setId(rs.getString("user_id"));
-                courseAdmin.setFirstName(rs.getString("first_name"));
-                courseAdmin.setLastName(rs.getString("last_name"));
-                courseAdmin.setEmail(rs.getString("email"));
-                course.setCreator(courseAdmin);
-                courses.add(course);
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return courses;
-    }
-
 
     @Override
     public Course findById(String id) {
@@ -159,12 +205,77 @@ public class CourseDAO implements EntityDAO<Course> {
 
     @Override
     public void deleteById(String id) {
+        try (Connection conn = ConnectionFactory.getInstance().getConnection()) {
+            String sql1 = "delete from registrations " +
+                    "where course_id = ?";
+            PreparedStatement pstmt1 = conn.prepareStatement(sql1);
+            pstmt1.setString(1, id);
+            pstmt1.executeUpdate();
 
+            String sql2 = "delete from courses " +
+                    "where course_id = ?";
+            PreparedStatement pstmt2 = conn.prepareStatement(sql2);
+            pstmt2.setString(1, id);
+            pstmt2.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
     public Course update(Course updatedCourse) {
+        try (Connection conn = ConnectionFactory.getInstance().getConnection()) {
+
+
+            String sql = "UPDATE courses SET program = ?, level = ?, name = ?, description = ? " +
+                    "WHERE course_id = ?";
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, updatedCourse.getProgram());
+            pstmt.setString(2, updatedCourse.getLevel());
+            pstmt.setString(3, updatedCourse.getName());
+            pstmt.setString(4, updatedCourse.getDescription());
+            pstmt.setString(5, updatedCourse.getId());
+
+            int rowsInserted = pstmt.executeUpdate();
+
+            if (rowsInserted != 0) {
+                return updatedCourse;
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
         return null;
     }
 
+    public void deleteRegistrationById(String userId, String courseId) {
+        try (Connection conn = ConnectionFactory.getInstance().getConnection()) {
+            String sql = "delete from registrations " +
+                    "where user_id = ? " +
+                    "and course_id = ?";
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, userId);
+            pstmt.setString(2, courseId);
+            pstmt.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void createRegistrationById(String userId, String courseId) {
+        if (!findRegistrationById(userId, courseId)) {
+            try (Connection conn = ConnectionFactory.getInstance().getConnection()) {
+                String sql = "insert into registrations (user_id, course_id) values (?, ?)";
+                PreparedStatement pstmt = conn.prepareStatement(sql);
+                pstmt.setString(1, userId);
+                pstmt.setString(2, courseId);
+                pstmt.executeUpdate();
+
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 }

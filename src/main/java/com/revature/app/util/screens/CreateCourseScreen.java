@@ -38,8 +38,8 @@ public class CreateCourseScreen extends Screen {
 
         try {
             this.state.courseService.createNewCourse(newCourse);
-            System.out.println("Registration successful!");
-            this.state.router.navigate("/login");
+            System.out.println("Course creation succeeded!");
+            this.state.router.navigate("/dashboard");
         } catch (InvalidRequestException | ResourcePersistenceException e) {
             this.state.log(LogLevel.ERROR, e.getMessage());
         } catch (Exception e) {

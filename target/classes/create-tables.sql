@@ -1,10 +1,11 @@
-drop table if exists registrations;
-drop table if exists courses;
-drop table if exists users;
+drop table if exists roles cascade;
+drop table if exists users cascade;
+drop table if exists courses cascade;
 
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 create table users (
-    user_id varchar check (user_id <> ''),
+    user_id uuid default uuid_generate_v4 (),
     role varchar(16) default 'student',
     email varchar(255) unique not null check (email <> ''),
     first_name varchar(25) not null check (first_name <> ''),
@@ -15,13 +16,25 @@ create table users (
     primary key (user_id)
 );
 
+create table roles (
+    role_id serial,
+    role varchar(16),
+    user_id uuid,
+
+    constraint roles_pk
+    primary key (role_id),
+
+    constraint user_id_fk
+    foreign key (user_id)
+    references users
+);
+
 create table courses (
-    course_id varchar check (course_id <> ''),
-    level int not null check (level <> 0),
-    program varchar(32) not null check (program <> ''),
+    course_id uuid default uuid_generate_v4 (),
     name varchar(255) unique not null check (name <> ''),
     description varchar(255) not null check (description <> ''),
-    creator_id varchar not null check (creator_id <> ''),
+    program varchar(32) not null check (program <> ''),
+    creator_id uuid,
 
     constraint courses_pk
     primary key (course_id),
@@ -33,8 +46,8 @@ create table courses (
 
 create table registrations (
     registration_id serial,
-    course_id varchar not null check (course_id <> ''),
-    user_id varchar not null check (user_id <> ''),
+    course_id uuid,
+    user_id uuid,
 
     constraint registration_pk
     primary key (registration_id),
@@ -48,17 +61,13 @@ create table registrations (
     references users
 );
 
-insert into users (	user_id, role, email, first_name, last_name, password)
-values ( '33956d94-a4a0-4c88-b924-c4af2edb4c49', 'teacher', 'teacher@test.com', 'John', 'Doe', 'test');
+insert into users (	email, first_name, last_name, password)
+values ( 'teacher@test.com', 'test', 'John', 'Doe');
 
-insert into users (	user_id, role, email, first_name, last_name, password)
-values ( '1fa658ad-a8fd-424a-8a82-27e492ff858e', 'student', 'student@test.com', 'Jane', 'Doe', 'test');
+insert into users (	email, first_name, last_name, password)
+values ( 'student@test.com', 'test', 'Jane', 'Doe');
 
-insert into courses ( course_id, level, program, name, description, creator_id)
-values ('1394fe42-f6c9-40c2-8432-09e74f1a7dd1', '4000', 'Psych', 'Seminar on Cognitive Science', 'Self-directed study targeted to thesis track graduate students.', '33956d94-a4a0-4c88-b924-c4af2edb4c49');
+insert into roles
 
-insert into courses ( course_id, level, program, name, description, creator_id)
-values ('1394fe42-f6c9-40c3-8432-09e74f1a7dd1', '1000', 'Bio', 'Into to Health Science', 'Introduction, overview, and history of the Health Sciences field', '33956d94-a4a0-4c88-b924-c4af2edb4c49');
 
-insert into registrations ( course_id, user_id )
-values ('1394fe42-f6c9-40c2-8432-09e74f1a7dd1', '1fa658ad-a8fd-424a-8a82-27e492ff858e');
+
