@@ -17,8 +17,8 @@ create table users (
 
 create table courses (
     course_id varchar check (course_id <> ''),
-    level int not null check (level <> 0),
-    program varchar(32) not null check (program <> ''),
+    level varchar not null check (level <> ''),
+    program varchar not null check (program <> ''),
     name varchar(255) unique not null check (name <> ''),
     description varchar(255) not null check (description <> ''),
     creator_id varchar not null check (creator_id <> ''),
@@ -58,7 +58,10 @@ insert into courses ( course_id, level, program, name, description, creator_id)
 values ('1394fe42-f6c9-40c2-8432-09e74f1a7dd1', '4000', 'Psych', 'Seminar on Cognitive Science', 'Self-directed study targeted to thesis track graduate students.', '33956d94-a4a0-4c88-b924-c4af2edb4c49');
 
 insert into courses ( course_id, level, program, name, description, creator_id)
-values ('1394fe42-f6c9-40c3-8432-09e74f1a7dd1', '1000', 'Bio', 'Into to Health Science', 'Introduction, overview, and history of the Health Sciences field', '33956d94-a4a0-4c88-b924-c4af2edb4c49');
+values ('1394fe42-f6c9-40c3-8432-09e74f1a7dd1', '1000', 'Bio', 'Intro to Health Science', 'Introduction, overview, and history of the Health Sciences field', '33956d94-a4a0-4c88-b924-c4af2edb4c49');
 
 insert into registrations ( course_id, user_id )
 values ('1394fe42-f6c9-40c2-8432-09e74f1a7dd1', '1fa658ad-a8fd-424a-8a82-27e492ff858e');
+
+update courses set level = '4000', program = 'Crim',  name = 'Seminar on Cognitive Science'
+where course_id = '1394fe42-f6c9-40c2-8432-09e74f1a7dd1';

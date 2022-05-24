@@ -1,4 +1,4 @@
-package java.com.revature.app.services;
+package com.revature.app.services;
 
 import com.revature.app.daos.UserDAO;
 import com.revature.app.exceptions.InvalidRequestException;

@@ -36,10 +36,10 @@ As a faculty member I can:
 
 As a student, I can:
 - [x] register a new account with the system (must be secured with a password)
-- [ ] view classes available for registration
-- [ ] register for an open and available class
+- [x] view classes available for registration
+- [x] register for an open and available class
 - [x] cancel my registration for a class (if within window)
-- [ ] view the classes that I have registered for
+- [x] view the classes that I have registered for
 
 ## Custom Project Concept Details
 
@@ -74,10 +74,10 @@ All project concepts must display the following domain-independent features/requ
 
 Regardless of the project concept you choose, you will be required to adhere to the following tech stack:
 
-- [ ] Java 8
-- [ ] Apache Maven
-- [ ] PostgreSQL (hosted on AWS RDS)
-- [ ] Git SCM (hosted on GitHub)
+- [x] Java 8
+- [x] Apache Maven
+- [x] PostgreSQL (hosted on AWS RDS)
+- [x] Git SCM (hosted on GitHub)
 
 
 ## Repo Instructions

@@ -28,7 +28,7 @@ public class DashboardScreen extends Screen {
             switch(sessionUser.getRole()) {
                 case "student":
                     menu = "1) View and drop currently registered courses\n" +
-                            "2) View and register for new courses\n" +
+                            "2) Register for a new course\n" +
                             "3) View all registered courses\n" +
                             "4) Logout\n" +
                             "> ";
